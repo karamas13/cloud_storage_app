@@ -1,0 +1,25 @@
+{
+    /* 1. Use Prettier as the default formatter for all files */
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+    /* 2. Run the default formatter (Prettier) whenever you save */
+    "editor.formatOnSave": true,
+
+    /* 3. Tell ESLint to fix "fixable" errors automatically on save */
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+
+    /* 4. Ensure ESLint works for common file types */
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "html",
+        "vue"
+    ],
+
+    /* 5. (Optional) Prevent Prettier from trying to format if there's no config file */
+    "prettier.requireConfig": true
+}
