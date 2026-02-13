@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field } from '@/components/ui/field'
 
+import loader from '@/public/assets/icons/loader.svg'
+
 import {
     Form,
     FormControl,
@@ -30,8 +32,10 @@ const formSchema = z.object({
 
 import React, { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { set, useForm } from 'react-hook-form'
 import Link from 'next/link'
+import { createAccount } from '@/lib/actions/user.actions'
+import OtpModal from './OTPModal'
 
 type FormType = 'sign-in' | 'sign-up'
 
@@ -48,6 +52,7 @@ const authFormSchema = (formType: FormType) => {
 const AuthForm = (type: { type: FormType }) => {
     const [isLoading, setIsLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
+    const [accountId, setAccountId] = useState(null)
 
     const formSchema = authFormSchema(type.type)
 
@@ -58,6 +63,24 @@ const AuthForm = (type: { type: FormType }) => {
             email: '',
         },
     })
+
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        setIsLoading(true)
+        setErrorMessage('')
+
+        try {
+            const user = await createAccount({
+                fullName: values.fullName || '',
+                email: values.email,
+            })
+
+            setAccountId(user.accountId)
+        } catch {
+            setErrorMessage('Error creating account')
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     return (
         <>
@@ -122,7 +145,7 @@ const AuthForm = (type: { type: FormType }) => {
 
                         {isLoading && (
                             <Image
-                                src="/assets/icons/loader.svg"
+                                src={loader}
                                 alt="Loading"
                                 width={24}
                                 height={24}
@@ -153,6 +176,12 @@ const AuthForm = (type: { type: FormType }) => {
                     </div>
                 </form>
             </Form>
+            {accountId && (
+                <OtpModal
+                    email={form.getValues('email')}
+                    accountId={accountId}
+                />
+            )}
         </>
     )
 }
