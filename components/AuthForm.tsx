@@ -34,7 +34,7 @@ import React, { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { set, useForm } from 'react-hook-form'
 import Link from 'next/link'
-import { createAccount } from '@/lib/actions/user.actions'
+import { createAccount, signInUser } from '@/lib/actions/user.actions'
 import OtpModal from './OTPModal'
 
 type FormType = 'sign-in' | 'sign-up'
@@ -69,7 +69,17 @@ const AuthForm = (type: { type: FormType }) => {
         setErrorMessage('')
 
         try {
-            const user = await createAccount({
+            const user =
+                type.type === 'sign-up'
+                    ? await createAccount({
+                          fullName: values.fullName || '',
+                          email: values.email,
+                      })
+                    : await signInUser({
+                          email: values.email,
+                      })
+
+            await createAccount({
                 fullName: values.fullName || '',
                 email: values.email,
             })
